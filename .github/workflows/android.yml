@@ -22,8 +22,27 @@ jobs:
           pip install --upgrade pip
           pip install buildozer "cython==0.29.36" virtualenv setuptools
       - name: Build APK
-        run: buildozer -v android debug
-      - name: Upload APK
+        run: |
+          set -o pipefail
+          buildozer -v android debug 2>&1 | tee build.log
+      - name: Extraer error
+        if: always()
+        run: |
+          grep -n -i -E "error|failed|exception|traceback" build.log | tail -n 40 > error_resumen.txt || true
+          tail -n 120 build.log > error_final.txt || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -n 40 build.log >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+      - name: Subir logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs
+          path: |
+            error_resumen.txt
+            error_final.txt
+      - name: Subir APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: echo-knight-apk
