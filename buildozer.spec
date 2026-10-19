@@ -5,7 +5,7 @@ package.domain = org.echoknight
 source.dir = .
 source.include_exts = py,png
 version = 11.2
-requirements = python3,pygame
+requirements = python3==3.11.5,hostpython3==3.11.5,pygame
 orientation = landscape
 fullscreen = 1
 icon.filename = Soult_icon.png
